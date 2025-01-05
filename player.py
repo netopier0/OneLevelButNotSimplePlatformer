@@ -1,7 +1,7 @@
 import pygame
 
 class Player:
-    def __init__(self, x, y, w, h, world):
+    def __init__(self, x, y, w, h, world, puzzle):
         self.rect = pygame.rect.Rect((x, y, w, h))
         self.jumpRect = pygame.rect.Rect((x, y+h-1, w, 2))
         self.display_surface = pygame.display.get_surface()
@@ -12,6 +12,7 @@ class Player:
         self.WPressed = False
         self.onPlatformMove = False
         self.myWorld = world
+        self.myPuzzle = puzzle
 
     def move(self, dt):
         keys = pygame.key.get_pressed()
@@ -186,27 +187,11 @@ class Player:
                 if but[1] not in self.myWorld.pressedButtons:
                     self.myWorld.pressedButtons.add(but[1])
                     self.myWorld.reloadCollider()
-                    print("buT", but[1])
                 
         for ex in self.myWorld.exits:
             if ex[0].colliderect(self):
-                if ex[1] == "R1":
-                    self.setPlayerPos(540, 35)
-                elif ex[1] == "R2":
-                    self.setPlayerPos(540, 210)
-                elif ex[1] == "R3":
-                    self.setPlayerPos(540, 510)
-                elif ex[1] == "L1":
-                    self.setPlayerPos(50, 35)
-                elif ex[1] == "L2":
-                    self.setPlayerPos(50, 210)
-                elif ex[1] == "L3":
-                    self.setPlayerPos(50, 510)
-                elif ex[1] == "U3":
-                    self.setPlayerPos(540, 50)
-                elif ex[1] == "D3":
-                    self.setPlayerPos(500, 525)
-                print("door")
+                x, y = self.myPuzzle.moving(ex[1])
+                self.setPlayerPos(x, y)
 
     def setPlayerPos(self, x, y):
         self.rect.x = x

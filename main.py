@@ -2,6 +2,7 @@ from sys import exit as End
 import pygame
 from player import Player
 from world import World
+from puzzle import Puzzle
 
 class Game:
     def __init__(self):
@@ -10,7 +11,9 @@ class Game:
         self.running = True
         self.clock = pygame.time.Clock()        
         self.world = World()
-        self.player = Player(300,250,16,16,self.world)
+        self.puzzle = Puzzle(self.world)
+        self.game = False #Todo edit
+        self.player = Player(300,250,16,16,self.world,self.puzzle)
 
     def run(self):
         self.world.loadWorldFromFile("1")
@@ -45,13 +48,22 @@ class Game:
                     elif event.key == 56:
                         self.world.loadWorldFromFile("8")
                     if event.key in [49,50,51,52,53,54,55,56]:
-                        self.player.collisionBlocks = self.world.colliders
+                        self.player.collisionBlocks = self.world.colliders # Obsolete
+                    if event.key == 109:
+                        self.game = False
+                    elif event.key == 110:
+                        self.game = True
+                if event.type == pygame.MOUSEBUTTONUP and not self.game:
+                    self.puzzle.clickPos(pygame.mouse.get_pos())
 
             self.display_surface.fill((255,255,255))
             #pygame.draw.rect(self.display_surface, (255,0,0), self.player.rect)
-            self.world.move(deltaTime)
-            self.world.drawWorld()
-            self.player.update(deltaTime)
+            if self.game:
+                self.world.move(deltaTime)
+                self.world.drawWorld()
+                self.player.update(deltaTime)
+            else:
+                self.puzzle.drawPuzzle()
 
             pygame.display.update()
             

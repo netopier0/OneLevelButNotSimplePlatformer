@@ -92,7 +92,6 @@ class World:
         if "extraJump" in data:
             for val in data["extraJump"][0].values():
                 self.extraJump.append(pygame.Rect(int(val[0]), int(val[1]), int(val[2]), int(val[3])))
-
     
 
 
