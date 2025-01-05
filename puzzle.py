@@ -1,14 +1,18 @@
 import pygame
 import json
+from os.path import join
 
 class Puzzle:
     def __init__(self, world):
         self.currLevel = 1
         self.myWorld = world
         self.field = dict()
+        self.images = []
 
         for i in range(9):
             self.field[i+1] = [pygame.rect.Rect((25+(200*(i%3)), 25+(200*(i//3)), 150, 150)), (i//3, i%3), []]
+            if i+1 != 9:
+                self.images.append(pygame.image.load(join('assets', str(i+1) + '.png')))
 
         self.display_surface = pygame.display.get_surface()
 
@@ -23,7 +27,8 @@ class Puzzle:
         for k in self.field.keys():
             if k == 9:
                 continue
-            pygame.draw.rect(self.display_surface, (0,0,255), self.field[k][0])
+            self.display_surface.blit(self.images[k-1], self.field[k][0].topleft)
+            #pygame.draw.rect(self.display_surface, (0,0,255), self.field[k][0])
 
     def clickPos(self, pos):
         for k in self.field.keys():

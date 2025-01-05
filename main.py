@@ -12,8 +12,8 @@ class Game:
         self.clock = pygame.time.Clock()        
         self.world = World()
         self.puzzle = Puzzle(self.world)
-        self.game = False #Todo edit
-        self.player = Player(300,250,16,16,self.world,self.puzzle)
+        self.game = True #Todo edit
+        self.player = Player(40,450,16,16,self.world,self.puzzle)
 
     def run(self):
         self.world.loadWorldFromFile("1")
@@ -30,7 +30,7 @@ class Game:
                     self.player.rect.x = 300
                     self.player.rect.y = 250
                     self.player.direction = [0, 0]
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN and False:
                     if event.key == 49:
                         self.world.loadWorldFromFile("1")
                     elif event.key == 50:
@@ -47,8 +47,7 @@ class Game:
                         self.world.loadWorldFromFile("7")
                     elif event.key == 56:
                         self.world.loadWorldFromFile("8")
-                    if event.key in [49,50,51,52,53,54,55,56]:
-                        self.player.collisionBlocks = self.world.colliders # Obsolete
+                if event.type == pygame.KEYDOWN:
                     if event.key == 109:
                         self.game = False
                     elif event.key == 110:
@@ -63,6 +62,7 @@ class Game:
                 self.world.drawWorld()
                 self.player.update(deltaTime)
             else:
+                self.display_surface.fill((200,200,255))
                 self.puzzle.drawPuzzle()
 
             pygame.display.update()

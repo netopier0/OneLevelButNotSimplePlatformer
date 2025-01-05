@@ -45,7 +45,7 @@ class World:
             pygame.draw.rect(self.display_surface, (127,127,127), coll)
 
         for coll in self.colliders:
-            pygame.draw.rect(self.display_surface, (0,255,0), coll, 1)
+            pygame.draw.rect(self.display_surface, (0,255,0), coll)
 
     def loadWorldFromFile(self, level):
         '''

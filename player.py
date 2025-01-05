@@ -24,7 +24,7 @@ class Player:
             self.direction[1] += 9.81
             if keys[pygame.K_s]:
                 self.direction[1] += 30
-            if (keys[pygame.K_SPACE] or keys[pygame.K_w]) and self.extraJump:
+            if keys[pygame.K_w] and self.extraJump:
                 if self.extraJumpCheck() and not self.WPressed:
                     self.extraJump = False
                     self.direction[1] = -300
@@ -50,7 +50,7 @@ class Player:
             if keys[pygame.K_d]:
                 self.direction[0] += 100
 
-        if self.state == "ground" and (keys[pygame.K_SPACE] or keys[pygame.K_w]):
+        if self.state == "ground" and keys[pygame.K_w]:
             if self.jumpPadCheck():
                 self.direction[1] = -500
             else:
@@ -218,7 +218,7 @@ class Player:
 
     def draw(self):
         pygame.draw.rect(self.display_surface, (255,0,0), self.rect)
-        pygame.draw.rect(self.display_surface, (0,0,255), self.jumpRect)
+        #pygame.draw.rect(self.display_surface, (0,0,255), self.jumpRect)
 
     def update(self, dt):
         self.move(dt)
