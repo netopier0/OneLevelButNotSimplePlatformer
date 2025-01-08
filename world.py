@@ -1,5 +1,6 @@
 import pygame
 import json
+from os.path import join
 
 class World:
     def __init__(self):
@@ -13,13 +14,23 @@ class World:
         self.jumpPads = []
         self.extraJump = []
         
+        self.images = {"wall":pygame.image.load(join('assets', 'tile1.png')),
+                       "button":pygame.image.load(join('assets', 'button.png')).convert_alpha(),
+                       "extraJumpZone":pygame.image.load(join('assets', 'extraJumpZone.png')),
+                       "jumpPad":pygame.image.load(join('assets', 'jumpPad.png')).convert_alpha()}
+        self.staticSurfaces = []
+        self.actionSurfaces = []
+        
         self.conditionalMovingCollider = []
 
         self.pressedButtons = set()
+        self.biggestPessed = 1
         self.display_surface = pygame.display.get_surface()
 
     def reloadCollider(self):
         self.colliders = []
+        self.staticSurfaces = []
+        self.biggestPessed = max([1] + [int(x) if len(x) == 1  else 1 for x in self.pressedButtons])
         
         with open('levelData.json', 'r') as file:
             data = json.load(file)[self.currLevel][0]
@@ -27,10 +38,14 @@ class World:
         for val in data["walls"][0].values():
             if len(val) == 4 or (all([x in self.pressedButtons for x in val[5].split(",")]) and val[4] == "True") or (not all([x in self.pressedButtons for x in val[5].split(",")]) and val[4] == "False"):
                     self.colliders.append(pygame.Rect(int(val[0]), int(val[1]), int(val[2]), int(val[3])))
+                    self.staticSurfaces.append((createSurface(int(val[2]), int(val[3]), self.images["wall"]) , int(val[0]), int(val[1])))
+
 
     def drawWorld(self):
         for coll in self.buttons:
-            pygame.draw.rect(self.display_surface, (0,0,255), coll[0])
+            #pygame.draw.rect(self.display_surface, (0,0,255), coll[0])
+            self.display_surface.blit(self.images["button"], coll[0].topleft)
+
 
         for coll in self.exits:
             pygame.draw.rect(self.display_surface, (0,255,255), coll[0])
@@ -39,13 +54,21 @@ class World:
             pygame.draw.rect(self.display_surface, (255,0,0), coll)
 
         for coll in self.jumpPads:
-            pygame.draw.rect(self.display_surface, (255,0,255), coll)
+            #pygame.draw.rect(self.display_surface, (255,0,255), coll)
+            self.display_surface.blit(self.images["jumpPad"], coll.topleft)
             
-        for coll in self.extraJump:
-            pygame.draw.rect(self.display_surface, (127,127,127), coll)
+        #for coll in self.extraJump:
+            #pygame.draw.rect(self.display_surface, (127,127,127), coll)
+            #self.display_surface.blit(self.images["extraJumpZone"], coll.topleft)
+            
+        for surf, x, y in self.actionSurfaces:
+            self.display_surface.blit(surf, (x,y))
+    
+        #for coll in self.colliders:
+        #    pygame.draw.rect(self.display_surface, (0,255,0), coll)
 
-        for coll in self.colliders:
-            pygame.draw.rect(self.display_surface, (0,255,0), coll)
+        for surf, x, y in self.staticSurfaces:
+            self.display_surface.blit(surf, (x,y))
 
     def loadWorldFromFile(self, level):
         '''
@@ -64,6 +87,8 @@ class World:
         self.extraJump = []
         self.conditionalCollider = []
         self.conditionalMovingCollider = []
+        self.staticSurfaces = []
+        self.actionSurfaces = []
 
         with open('levelData.json', 'r') as file:
             data = json.load(file)[level][0]
@@ -71,6 +96,7 @@ class World:
         for val in data["walls"][0].values():
             if len(val) == 4 or (all([x in self.pressedButtons for x in val[5].split(",")]) and val[4] == "True") or (not all([x in self.pressedButtons for x in val[5].split(",")]) and val[4] == "False"):
                     self.colliders.append(pygame.Rect(int(val[0]), int(val[1]), int(val[2]), int(val[3])))
+                    self.staticSurfaces.append((createSurface(int(val[2]), int(val[3]), self.images["wall"]) , int(val[0]), int(val[1])))
         if "buttons" in data:
             for val in data["buttons"][0].values():
                 self.buttons.append([pygame.Rect(int(val[0]), int(val[1]), int(val[2]), int(val[3])), val[4]])
@@ -92,6 +118,8 @@ class World:
         if "extraJump" in data:
             for val in data["extraJump"][0].values():
                 self.extraJump.append(pygame.Rect(int(val[0]), int(val[1]), int(val[2]), int(val[3])))
+                self.actionSurfaces.append((createSurface(int(val[2]), int(val[3]), self.images["extraJumpZone"]) , int(val[0]), int(val[1])))
+
     
 
 
@@ -120,3 +148,12 @@ class World:
 
     def getColliders(self):
         return self.colliders + self.movingColl
+
+def createSurface(x, y, img):
+    a, b = img.get_rect().bottomright
+    newSur = pygame.Surface((x,y))
+    for i in range(x//a):
+        for j in range(y//b):
+            newSur.blit(img, (i*a,j*b))
+    return newSur
+        

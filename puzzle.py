@@ -27,9 +27,11 @@ class Puzzle:
         for k in self.field.keys():
             if k == 9:
                 continue
-            self.display_surface.blit(self.images[k-1], self.field[k][0].topleft)
-            #pygame.draw.rect(self.display_surface, (0,0,255), self.field[k][0])
-
+            if k > self.myWorld.biggestPessed:
+                pygame.draw.rect(self.display_surface, (0,0,255), self.field[k][0])
+            else:
+                self.display_surface.blit(self.images[k-1], self.field[k][0].topleft)
+            
     def clickPos(self, pos):
         for k in self.field.keys():
             if k == 9:
@@ -65,7 +67,7 @@ class Puzzle:
                 break
 
         rd = reverseDir(d)
-        if nextLevel == self.currLevel or rd not in self.field[nextLevel][2]:
+        if nextLevel == self.currLevel or rd not in self.field[nextLevel][2] or nextLevel > self.myWorld.biggestPessed:
             return getCoordsByDir(d)
 
         self.currLevel = nextLevel

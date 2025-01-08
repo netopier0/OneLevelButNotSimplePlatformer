@@ -30,7 +30,7 @@ class Game:
                     self.player.rect.x = 300
                     self.player.rect.y = 250
                     self.player.direction = [0, 0]
-                if event.type == pygame.KEYDOWN and False:
+                if event.type == pygame.KEYDOWN:
                     if event.key == 49:
                         self.world.loadWorldFromFile("1")
                     elif event.key == 50:
