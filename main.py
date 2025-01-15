@@ -3,6 +3,7 @@ import pygame
 from player import Player
 from world import World
 from puzzle import Puzzle
+from menu import Menu
 
 class Game:
     def __init__(self):
@@ -12,8 +13,9 @@ class Game:
         self.clock = pygame.time.Clock()        
         self.world = World()
         self.puzzle = Puzzle(self.world)
-        self.game = True #Todo edit
-        self.player = Player(40,450,16,16,self.world,self.puzzle)
+        self.menu = Menu(self)
+        self.currScreen = 0 # 0-Menu, 1-levels, 2-puzzle
+        self.player = Player(40,450,16,25,self.world,self.puzzle)
 
     def run(self):
         self.world.loadWorldFromFile("1")
@@ -48,21 +50,24 @@ class Game:
                     elif event.key == 56:
                         self.world.loadWorldFromFile("8")
                 if event.type == pygame.KEYDOWN:
-                    if event.key == 109:
-                        self.game = False
-                    elif event.key == 110:
-                        self.game = True
-                if event.type == pygame.MOUSEBUTTONUP and not self.game:
-                    self.puzzle.clickPos(pygame.mouse.get_pos())
+                    if self.currScreen == 1  and event.key == 109:
+                        self.currScreen = 2
+                    elif self.currScreen == 2 and event.key == 110:
+                        self.currScreen = 1
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if self.currScreen == 0:
+                        self.menu.clickPos(pygame.mouse.get_pos())
+                    if self.currScreen == 2:
+                        self.puzzle.clickPos(pygame.mouse.get_pos())
 
             self.display_surface.fill((255,255,255))
-            #pygame.draw.rect(self.display_surface, (255,0,0), self.player.rect)
-            if self.game:
+            if self.currScreen == 0:
+                self.menu.drawMenu()
+            elif self.currScreen == 1:
                 self.world.move(deltaTime)
                 self.world.drawWorld()
                 self.player.update(deltaTime)
-            else:
-                self.display_surface.fill((200,200,255))
+            elif self.currScreen == 2:
                 self.puzzle.drawPuzzle()
 
             pygame.display.update()

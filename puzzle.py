@@ -24,6 +24,7 @@ class Puzzle:
                     self.field[i][2].append(val[4])
 
     def drawPuzzle(self):
+        self.display_surface.fill((200,200,255))
         for k in self.field.keys():
             if k == 9:
                 continue

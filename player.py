@@ -1,4 +1,5 @@
 import pygame
+from os.path import join
 
 class Player:
     def __init__(self, x, y, w, h, world, puzzle):
@@ -13,6 +14,16 @@ class Player:
         self.onPlatformMove = False
         self.myWorld = world
         self.myPuzzle = puzzle
+
+        self.imageIdle = pygame.image.load(join('assets', 'character', 'idle.png')).convert_alpha()
+        self.animFrames = {"l": [], "r":[]}
+        self.frameIndex = 0
+        self.loadAnim("right")
+        self.loadAnim("left")
+
+    def loadAnim(self, direction):
+        for i in range(10):
+            self.animFrames[direction[0]].append(pygame.image.load(join('assets', 'character', direction, str(i) + '.png')).convert_alpha())
 
     def move(self, dt):
         keys = pygame.key.get_pressed()
@@ -80,6 +91,8 @@ class Player:
 
         #Check Jump
         self.updateJump()
+
+        self.updateFrameIndex(dt)
 
     def verticalCollision(self, d, d1, dt):
         for block in self.myWorld.colliders:
@@ -216,8 +229,21 @@ class Player:
             
         self.collider.updatePosition(self.rect.left, self.rect.top)
 
+    def updateFrameIndex(self, dt):
+        if self.direction[0] != 0:
+            self.frameIndex = (self.frameIndex + 6*dt)
+        else:
+            self.frameIndex = 0
+
     def draw(self):
-        pygame.draw.rect(self.display_surface, (255,0,0), self.rect)
+        if self.direction[0] > 0:
+            self.display_surface.blit(self.animFrames["r"][int(self.frameIndex%10)], self.rect.topleft)
+        elif self.direction[0] < 0:
+            self.display_surface.blit(self.animFrames["l"][int(self.frameIndex%10)], self.rect.topleft)
+        else:
+            self.display_surface.blit(self.imageIdle, self.rect.topleft)
+
+        #pygame.draw.rect(self.display_surface, (255,0,0), self.rect)
         #pygame.draw.rect(self.display_surface, (0,0,255), self.jumpRect)
 
     def update(self, dt):

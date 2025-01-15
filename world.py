@@ -17,9 +17,11 @@ class World:
         self.images = {"wall":pygame.image.load(join('assets', 'tile1.png')),
                        "button":pygame.image.load(join('assets', 'button.png')).convert_alpha(),
                        "extraJumpZone":pygame.image.load(join('assets', 'extraJumpZone.png')),
-                       "jumpPad":pygame.image.load(join('assets', 'jumpPad.png')).convert_alpha()}
+                       "jumpPad":pygame.image.load(join('assets', 'jumpPad.png')).convert_alpha(),
+                       "moveWall":pygame.image.load(join('assets', 'movetile1.png'))}
         self.staticSurfaces = []
         self.actionSurfaces = []
+        self.movingSurfaces = []
         
         self.conditionalMovingCollider = []
 
@@ -43,15 +45,17 @@ class World:
 
     def drawWorld(self):
         for coll in self.buttons:
-            #pygame.draw.rect(self.display_surface, (0,0,255), coll[0])
-            self.display_surface.blit(self.images["button"], coll[0].topleft)
+            if coll[1] not in self.pressedButtons:
+                #pygame.draw.rect(self.display_surface, (0,0,255), coll[0])
+                self.display_surface.blit(self.images["button"], coll[0].topleft)
 
 
         for coll in self.exits:
             pygame.draw.rect(self.display_surface, (0,255,255), coll[0])
 
-        for coll in self.movingColl:
-            pygame.draw.rect(self.display_surface, (255,0,0), coll)
+        for i, coll in enumerate(self.movingColl):
+            self.display_surface.blit(self.movingSurfaces[i][0], coll.topleft)
+            #pygame.draw.rect(self.display_surface, (255,0,0), coll)
 
         for coll in self.jumpPads:
             #pygame.draw.rect(self.display_surface, (255,0,255), coll)
@@ -89,6 +93,7 @@ class World:
         self.conditionalMovingCollider = []
         self.staticSurfaces = []
         self.actionSurfaces = []
+        self.movingSurfaces = []
 
         with open('levelData.json', 'r') as file:
             data = json.load(file)[level][0]
@@ -107,6 +112,7 @@ class World:
             for val in data["wallsMove"][0].values():
                 self.movingColl.append(pygame.Rect(int(val[0]), int(val[1]), int(val[2]), int(val[3])))
                 self.movingConst.append([(val[4], int(val[5]), int(val[6]), int(val[7])), int(val[8])])
+                self.movingSurfaces.append((createSurface(int(val[2]), int(val[3]), self.images["moveWall"]) , int(val[0]), int(val[1])))
                 self.moves.append([0, 0])
                 if len(val) == 10:
                     self.conditionalMovingCollider.append(val[9])
