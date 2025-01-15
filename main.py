@@ -27,28 +27,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN and event.key == 27:
-                    self.running = False
-                if event.type == pygame.KEYDOWN and event.key == 114:
-                    self.player.rect.x = 300
-                    self.player.rect.y = 250
-                    self.player.direction = [0, 0]
-                if event.type == pygame.KEYDOWN:
-                    if event.key == 49:
-                        self.world.loadWorldFromFile("1")
-                    elif event.key == 50:
-                        self.world.loadWorldFromFile("2")
-                    elif event.key == 51:
-                        self.world.loadWorldFromFile("3")
-                    elif event.key == 52:
-                        self.world.loadWorldFromFile("4")
-                    elif event.key == 53:
-                        self.world.loadWorldFromFile("5")
-                    elif event.key == 54:
-                        self.world.loadWorldFromFile("6")
-                    elif event.key == 55:
-                        self.world.loadWorldFromFile("7")
-                    elif event.key == 56:
-                        self.world.loadWorldFromFile("8")
+                    self.currScreen = 0
                 if event.type == pygame.KEYDOWN:
                     if self.currScreen == 1  and event.key == 109:
                         self.currScreen = 2
