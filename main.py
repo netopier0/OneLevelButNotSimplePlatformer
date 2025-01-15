@@ -43,6 +43,8 @@ class Game:
             if self.currScreen == 0:
                 self.menu.drawMenu()
             elif self.currScreen == 1:
+                if self.world.biggestPessed == 9:
+                    self.currScreen = 0
                 self.world.move(deltaTime)
                 self.world.drawWorld()
                 self.player.update(deltaTime)
